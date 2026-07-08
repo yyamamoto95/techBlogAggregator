@@ -75,28 +75,51 @@ const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
                         sideItems={sideItems}
                         isSaved={isSaved(hero.link)}
                         onRead={() => markRead(hero.link)}
-                        onSave={() => toggleSaved(hero.link)}
+                        onSave={() =>
+                            toggleSaved({
+                                title: hero.title,
+                                link: hero.link,
+                                source: hero.sourceTitle,
+                                publishedAt: hero.pubDate,
+                                matchedKeywords: TOPICS.filter((kw) =>
+                                    hero.title.toLowerCase().includes(kw.toLowerCase())
+                                ),
+                                savedAt: '',
+                            })
+                        }
                     />
                 </Box>
             )}
 
             <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={4}>
-                {rest.slice(4).map((post) => (
-                    <ArticleCard
-                        key={post.link}
-                        title={post.title}
-                        link={post.link}
-                        source={post.sourceTitle}
-                        publishedAt={post.pubDate ? new Date(post.pubDate) : null}
-                        matchedKeywords={TOPICS.filter((kw) =>
-                            post.title.toLowerCase().includes(kw.toLowerCase())
-                        )}
-                        isRead={isRead(post.link)}
-                        isSaved={isSaved(post.link)}
-                        onRead={() => markRead(post.link)}
-                        onSave={() => toggleSaved(post.link)}
-                    />
-                ))}
+                {rest.slice(4).map((post) => {
+                    const matchedKeywords = TOPICS.filter((kw) =>
+                        post.title.toLowerCase().includes(kw.toLowerCase())
+                    );
+                    return (
+                        <ArticleCard
+                            key={post.link}
+                            title={post.title}
+                            link={post.link}
+                            source={post.sourceTitle}
+                            publishedAt={post.pubDate ? new Date(post.pubDate) : null}
+                            matchedKeywords={matchedKeywords}
+                            isRead={isRead(post.link)}
+                            isSaved={isSaved(post.link)}
+                            onRead={() => markRead(post.link)}
+                            onSave={() =>
+                                toggleSaved({
+                                    title: post.title,
+                                    link: post.link,
+                                    source: post.sourceTitle,
+                                    publishedAt: post.pubDate,
+                                    matchedKeywords,
+                                    savedAt: '',
+                                })
+                            }
+                        />
+                    );
+                })}
             </SimpleGrid>
         </Layout>
     );

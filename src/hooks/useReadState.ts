@@ -1,9 +1,20 @@
 import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
+export type SavedArticle = {
+    title: string;
+    link: string;
+    source: string;
+    publishedAt?: string | null;
+    hatebu?: number;
+    summary?: string;
+    matchedKeywords?: string[];
+    savedAt: string;
+};
+
 export function useReadState() {
     const [readLinks, setReadLinks] = useLocalStorage<string[]>('mizuo:read', []);
-    const [savedLinks, setSavedLinks] = useLocalStorage<string[]>('mizuo:saved', []);
+    const [savedArticles, setSavedArticles] = useLocalStorage<SavedArticle[]>('mizuo:saved', []);
 
     const markRead = useCallback(
         (link: string) => {
@@ -15,14 +26,14 @@ export function useReadState() {
     );
 
     const toggleSaved = useCallback(
-        (link: string) => {
-            setSavedLinks((prev) =>
-                prev.includes(link)
-                    ? prev.filter((l) => l !== link)
-                    : [...prev, link]
-            );
+        (article: SavedArticle) => {
+            setSavedArticles((prev) => {
+                const exists = prev.some((a) => a.link === article.link);
+                if (exists) return prev.filter((a) => a.link !== article.link);
+                return [{ ...article, savedAt: new Date().toISOString() }, ...prev];
+            });
         },
-        [setSavedLinks]
+        [setSavedArticles]
     );
 
     const isRead = useCallback(
@@ -31,9 +42,9 @@ export function useReadState() {
     );
 
     const isSaved = useCallback(
-        (link: string) => savedLinks.includes(link),
-        [savedLinks]
+        (link: string) => savedArticles.some((a) => a.link === link),
+        [savedArticles]
     );
 
-    return { markRead, toggleSaved, isRead, isSaved, savedLinks };
+    return { markRead, toggleSaved, isRead, isSaved, savedArticles };
 }
