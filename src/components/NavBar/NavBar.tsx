@@ -1,15 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import {
-    Box,
-    Button,
-    Flex,
-    HStack,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    Text,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Text } from '@chakra-ui/react';
 
 type NavTab = { label: string; to: string };
 
@@ -31,14 +22,14 @@ export const NavBar: React.FC<Props> = ({ activePath = '/' }) => {
             bg='white'
             borderBottomWidth='1px'
             borderColor='neutral.border'
-            px={6}
+            px={{ base: 3, md: 6 }}
             py={3}
             position='sticky'
             top={0}
             zIndex='sticky'
         >
-            <Flex align='center' maxW='container.lg' mx='auto' gap={4}>
-                {/* ロゴ */}
+            <Flex align='center' maxW='container.lg' mx='auto' gap={{ base: 2, md: 4 }}>
+                {/* ロゴ: モバイルでは非表示 */}
                 <Text
                     as={Link}
                     to='/'
@@ -46,62 +37,49 @@ export const NavBar: React.FC<Props> = ({ activePath = '/' }) => {
                     fontSize='lg'
                     color='neutral.textPrimary'
                     flexShrink={0}
+                    display={{ base: 'none', md: 'block' }}
                     _hover={{ textDecoration: 'none' }}
                 >
                     Mizuo
                 </Text>
 
-                {/* タブナビ */}
-                <HStack
-                    spacing={1}
-                    bg='neutral.chip'
-                    borderRadius='full'
-                    p={1}
-                    flexShrink={0}
+                {/* タブナビ: モバイルでは横スクロール */}
+                <Box
+                    overflowX='auto'
+                    flex={1}
+                    sx={{ '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none' }}
                 >
-                    {TABS.map((tab) => {
-                        const isActive = activePath === tab.to;
-                        return (
-                            <Button
-                                key={tab.to}
-                                as={Link}
-                                to={tab.to}
-                                variant='tab'
-                                aria-current={isActive ? 'page' : undefined}
-                                bg={isActive ? 'white' : 'transparent'}
-                                color={
-                                    isActive
-                                        ? 'neutral.textPrimary'
-                                        : 'neutral.textSecondary'
-                                }
-                                shadow={isActive ? 'sm' : 'none'}
-                            >
-                                {tab.label}
-                            </Button>
-                        );
-                    })}
-                </HStack>
-
-                <Box flex={1} />
-
-                {/* 検索 */}
-                <InputGroup maxW='200px' size='sm'>
-                    <InputLeftElement pointerEvents='none' color='neutral.textMuted'>
-                        🔍
-                    </InputLeftElement>
-                    <Input
-                        placeholder='検索'
-                        borderRadius='full'
+                    <HStack
+                        spacing={1}
                         bg='neutral.chip'
-                        border='none'
-                        _focus={{
-                            bg: 'white',
-                            boxShadow: 'sm',
-                            border: '1px solid',
-                            borderColor: 'neutral.border',
-                        }}
-                    />
-                </InputGroup>
+                        borderRadius='full'
+                        p={1}
+                        width='fit-content'
+                        minW='100%'
+                        justifyContent={{ base: 'space-between', md: 'flex-start' }}
+                    >
+                        {TABS.map((tab) => {
+                            const isActive = activePath === tab.to;
+                            return (
+                                <Button
+                                    key={tab.to}
+                                    as={Link}
+                                    to={tab.to}
+                                    variant='tab'
+                                    aria-current={isActive ? 'page' : undefined}
+                                    bg={isActive ? 'white' : 'transparent'}
+                                    color={isActive ? 'neutral.textPrimary' : 'neutral.textSecondary'}
+                                    shadow={isActive ? 'sm' : 'none'}
+                                    fontSize={{ base: 'xs', md: 'sm' }}
+                                    px={{ base: 3, md: 4 }}
+                                    flexShrink={0}
+                                >
+                                    {tab.label}
+                                </Button>
+                            );
+                        })}
+                    </HStack>
+                </Box>
 
                 {/* アバター */}
                 <Flex
