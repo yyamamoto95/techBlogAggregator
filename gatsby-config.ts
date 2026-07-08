@@ -4,7 +4,14 @@ const config: GatsbyConfig = {
     siteMetadata: {
         title: 'Tech Blog Aggregator',
     },
-    plugins: ['@chakra-ui/gatsby-plugin'],
+    plugins: [
+        {
+            resolve: '@chakra-ui/gatsby-plugin',
+            options: {
+                resetCSS: true,
+            },
+        },
+    ],
 };
 
 export default config;

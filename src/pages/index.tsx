@@ -1,7 +1,14 @@
+import React, { useMemo, useState } from 'react';
 import { graphql, PageProps } from 'gatsby';
-import React from 'react';
+import { Box, SimpleGrid } from '@chakra-ui/react';
 import Layout from '../components/layout';
-import { Box, Heading, Link, List, ListItem } from '@chakra-ui/react';
+import { GreetingHeader } from '../components/GreetingHeader/GreetingHeader';
+import { TopicChipBar } from '../components/TopicChipBar/TopicChipBar';
+import { HeroCard } from '../components/HeroCard/HeroCard';
+import { ArticleCard } from '../components/ArticleCard/ArticleCard';
+import { EmptyState } from '../components/EmptyState/EmptyState';
+import { useReadState } from '../hooks/useReadState';
+import digestConfig from '../utils/digestConfig';
 
 type BlogPost = {
     title: string;
@@ -12,58 +19,85 @@ type BlogPost = {
     sourceLink: string;
 };
 
-type BlogSource = {
-    name: string;
-    title: string;
-    link: string;
-};
-
 type DataProps = {
     allBlogPost: { nodes: BlogPost[] };
-    allBlogSource: { nodes: BlogSource[] };
 };
 
+const TOPICS = [...digestConfig.keywords];
+
 const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
-    const postsBySource = new Map<string, BlogPost[]>();
-    for (const post of data.allBlogPost.nodes) {
-        const posts = postsBySource.get(post.sourceName) ?? [];
-        posts.push(post);
-        postsBySource.set(post.sourceName, posts);
-    }
+    const [activeTopic, setActiveTopic] = useState('すべて');
+    const { markRead, toggleSaved, isRead, isSaved } = useReadState();
+
+    const posts = data.allBlogPost.nodes;
+
+    const filtered = useMemo(() => {
+        if (activeTopic === 'すべて') return posts;
+        return posts.filter((p) =>
+            `${p.title} ${p.sourceTitle}`.toLowerCase().includes(activeTopic.toLowerCase())
+        );
+    }, [posts, activeTopic]);
+
+    const unreadCount = filtered.filter((p) => !isRead(p.link)).length;
+    const [hero, ...rest] = filtered;
+
+    const sideItems = rest.slice(0, 4).map((p, i) => ({
+        rank: i + 1,
+        title: p.title,
+        link: p.link,
+        matchedKeywords: TOPICS.filter((kw) =>
+            p.title.toLowerCase().includes(kw.toLowerCase())
+        ),
+    }));
 
     return (
         <Layout>
-            {data.allBlogSource.nodes.map((source) => {
-                const posts = postsBySource.get(source.name) ?? [];
-                return (
-                    <Box
-                        key={source.name}
-                        mb={8}
-                        borderBlockEnd={1}
-                        borderRadius='lg'
-                    >
-                        <Heading as='h2' size='md'>
-                            <Link href={source.link} isExternal>
-                                {source.title}
-                            </Link>
-                        </Heading>
-                        <List spacing={2} mt={2} p={0}>
-                            {posts.map((post) => (
-                                <Box mb={6} key={post.link}>
-                                    {post.pubDate ? (
-                                        <Box fontSize='ms'>{post.pubDate}</Box>
-                                    ) : null}
-                                    <ListItem>
-                                        <Link href={post.link} isExternal>
-                                            {post.title}
-                                        </Link>
-                                    </ListItem>
-                                </Box>
-                            ))}
-                        </List>
-                    </Box>
-                );
-            })}
+            <GreetingHeader unreadCount={unreadCount} />
+
+            <Box mb={5}>
+                <TopicChipBar topics={TOPICS} active={activeTopic} onChange={setActiveTopic} />
+            </Box>
+
+            {filtered.length === 0 && (
+                <EmptyState
+                    message='このトピックの記事はありません'
+                    sub='別のトピックを選択してください'
+                />
+            )}
+
+            {hero && (
+                <Box mb={6}>
+                    <HeroCard
+                        title={hero.title}
+                        link={hero.link}
+                        source={hero.sourceTitle}
+                        publishedAt={hero.pubDate ? new Date(hero.pubDate) : null}
+                        sideItems={sideItems}
+                        isSaved={isSaved(hero.link)}
+                        onRead={() => markRead(hero.link)}
+                        onSave={() => toggleSaved(hero.link)}
+                    />
+                </Box>
+            )}
+
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={4}>
+                {rest.slice(4).map((post) => (
+                    <ArticleCard
+                        key={post.link}
+                        title={post.title}
+                        link={post.link}
+                        source={post.sourceTitle}
+                        publishedAt={post.pubDate ? new Date(post.pubDate) : null}
+                        matchedKeywords={TOPICS.filter((kw) =>
+                            post.title.toLowerCase().includes(kw.toLowerCase())
+                        )}
+                        isRead={isRead(post.link)}
+                        isSaved={isSaved(post.link)}
+                        onRead={() => markRead(post.link)}
+                        onSave={() => toggleSaved(post.link)}
+                    />
+                ))}
+            </SimpleGrid>
         </Layout>
     );
 };
@@ -72,18 +106,11 @@ export default IndexPage;
 
 export const query = graphql`
     query {
-        allBlogSource(sort: { order: ASC }) {
-            nodes {
-                name
-                title
-                link
-            }
-        }
-        allBlogPost(sort: { pubDate: DESC }) {
+        allBlogPost(sort: { pubDate: DESC }, limit: 50) {
             nodes {
                 title
                 link
-                pubDate(formatString: "YYYY/MM/DD HH:mm")
+                pubDate(formatString: "YYYY-MM-DDTHH:mm:ssZ")
                 sourceName
                 sourceTitle
                 sourceLink
