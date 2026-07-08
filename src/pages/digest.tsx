@@ -40,12 +40,7 @@ const DigestPage: React.FC = () => {
 
             {days.map((day) => (
                 <Box key={day.date} mb={10}>
-                    <Text
-                        fontSize='sm'
-                        fontWeight='semibold'
-                        color='neutral.textSecondary'
-                        mb={3}
-                    >
+                    <Text fontSize='sm' fontWeight='semibold' color='neutral.textSecondary' mb={3}>
                         {day.date}
                     </Text>
 
@@ -69,7 +64,17 @@ const DigestPage: React.FC = () => {
                                 isRead={isRead(item.link)}
                                 isSaved={isSaved(item.link)}
                                 onRead={() => markRead(item.link)}
-                                onSave={() => toggleSaved(item.link)}
+                                onSave={() =>
+                                    toggleSaved({
+                                        title: item.title,
+                                        link: item.link,
+                                        source: item.source,
+                                        hatebu: item.hatebu,
+                                        summary: item.summary,
+                                        matchedKeywords: item.matchedKeywords,
+                                        savedAt: '',
+                                    })
+                                }
                             />
                         ))}
                     </Box>
