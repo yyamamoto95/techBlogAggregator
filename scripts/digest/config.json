@@ -1,5 +1,5 @@
 {
-    "maxItems": 10,
+    "maxItems": 12,
     "serendipityCount": 1,
     "lookbackHours": 24,
     "keywordBoost": 10,
@@ -11,6 +11,26 @@
         "セキュリティ",
         "LLM",
         "AI"
+    ],
+    "topics": [
+        "typescript",
+        "react",
+        "aws",
+        "llm"
+    ],
+    "aggregatorFeeds": [
+        {
+            "name": "はてブIT人気",
+            "feed": "https://b.hatena.ne.jp/hotentry/it.rss"
+        },
+        {
+            "name": "Qiitaトレンド",
+            "feed": "https://qiita.com/popular-items/feed"
+        },
+        {
+            "name": "Zennトレンド",
+            "feed": "https://zenn.dev/feed"
+        }
     ],
     "summary": {
         "model": "claude-haiku-4-5",
