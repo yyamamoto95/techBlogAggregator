@@ -1,0 +1,19 @@
+{
+    "maxItems": 10,
+    "serendipityCount": 1,
+    "lookbackHours": 24,
+    "keywordBoost": 10,
+    "keywords": [
+        "TypeScript",
+        "React",
+        "設計",
+        "パフォーマンス",
+        "セキュリティ",
+        "LLM",
+        "AI"
+    ],
+    "summary": {
+        "model": "claude-haiku-4-5",
+        "maxChars": 80
+    }
+}
