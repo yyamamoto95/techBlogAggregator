@@ -5,7 +5,7 @@ import { collect } from './collect.mjs';
 import { enrichWithHatebu } from './hatebu.mjs';
 import { selectTopItems } from './score.mjs';
 import { summarize } from './summarize.mjs';
-import { jstDateString, postToSlack, writeMarkdown } from './deliver.mjs';
+import { jstDateString, postToSlack, updateJsonIndex, writeMarkdown } from './deliver.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const config = JSON.parse(fs.readFileSync(path.join(here, 'config.json'), 'utf8'));
@@ -22,6 +22,9 @@ const summarized = await summarize(selected, config);
 const dateStr = jstDateString();
 const file = writeMarkdown(summarized, dateStr);
 console.log(`[run] Markdown 出力: ${file}`);
+
+const jsonFile = updateJsonIndex(summarized, dateStr);
+console.log(`[run] JSON インデックス更新: ${jsonFile}`);
 
 const sentToSlack = await postToSlack(summarized, dateStr);
 if (sentToSlack) console.log('[run] Slack 配信完了');

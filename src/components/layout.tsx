@@ -30,6 +30,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         >
                             ブログ一覧
                         </Button>
+                        <Button
+                            as={Link}
+                            to='/digest'
+                            variant='outline'
+                            colorScheme='gray'
+                            color='blue.500'
+                        >
+                            ダイジェスト
+                        </Button>
                     </Flex>
                 </Flex>
             </Box>

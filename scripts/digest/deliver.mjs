@@ -38,6 +38,40 @@ export function writeMarkdown(items, dateStr) {
     return file;
 }
 
+/**
+ * サイト表示用の JSON インデックスを更新する(直近 maxDays 日分を保持)。
+ * Gatsby の /digest ページがこのファイルを読み込む。
+ */
+export function updateJsonIndex(items, dateStr, maxDays = 14) {
+    const dir = path.join(process.cwd(), 'digests');
+    fs.mkdirSync(dir, { recursive: true });
+    const file = path.join(dir, 'index.json');
+
+    let history = [];
+    try {
+        history = JSON.parse(fs.readFileSync(file, 'utf8'));
+    } catch {
+        // 初回またはファイル破損時は空から作り直す
+    }
+
+    const entry = {
+        date: dateStr,
+        items: items.map((item) => ({
+            title: item.title,
+            link: item.link,
+            source: item.source,
+            hatebu: item.hatebu,
+            summary: item.summary ?? '',
+            matchedKeywords: item.matchedKeywords ?? [],
+            serendipity: item.serendipity ?? false,
+        })),
+    };
+
+    history = [entry, ...history.filter((d) => d.date !== dateStr)].slice(0, maxDays);
+    fs.writeFileSync(file, JSON.stringify(history, null, 2));
+    return file;
+}
+
 /** SLACK_WEBHOOK_URL があれば Slack にも配信する(なければスキップ) */
 export async function postToSlack(items, dateStr) {
     const webhook = process.env.SLACK_WEBHOOK_URL;
