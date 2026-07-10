@@ -15,7 +15,8 @@
         "typecheck": "tsc --noEmit",
         "digest": "node scripts/digest/run.mjs",
         "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build"
+        "build-storybook": "storybook build",
+        "migrate": "set -a && source .env.development && set +a && supabase db push --yes"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.110.0",
@@ -23,6 +24,7 @@
         "@chakra-ui/react": "^2.10.6",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
+        "@supabase/supabase-js": "^2.110.2",
         "framer-motion": "^12.4.10",
         "gatsby": "^5.14.1",
         "react": "^18.2.0",

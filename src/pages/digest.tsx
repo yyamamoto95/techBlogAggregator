@@ -5,6 +5,7 @@ import { Box, Text } from '@chakra-ui/react';
 import { ArticleCard } from '../components/ArticleCard/ArticleCard';
 import { EmptyState } from '../components/EmptyState/EmptyState';
 import { useReadState } from '../hooks/useReadState';
+import { useSavedArticles } from '../hooks/useSavedArticles';
 
 type DigestItem = {
     title: string;
@@ -23,7 +24,8 @@ type DigestDay = {
 
 const DigestPage: React.FC = () => {
     const days = digests as DigestDay[];
-    const { markRead, toggleSaved, isRead, isSaved } = useReadState();
+    const { markRead, isRead } = useReadState();
+    const { toggleSaved, isSaved } = useSavedArticles();
 
     return (
         <Layout>
