@@ -8,6 +8,7 @@ import { HeroCard } from '../components/HeroCard/HeroCard';
 import { ArticleCard } from '../components/ArticleCard/ArticleCard';
 import { EmptyState } from '../components/EmptyState/EmptyState';
 import { useReadState } from '../hooks/useReadState';
+import { useSavedArticles } from '../hooks/useSavedArticles';
 import digestConfig from '../utils/digestConfig';
 
 type BlogPost = {
@@ -27,14 +28,15 @@ const TOPICS = [...digestConfig.keywords];
 
 const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
     const [activeTopic, setActiveTopic] = useState('すべて');
-    const { markRead, toggleSaved, isRead, isSaved } = useReadState();
+    const { markRead, isRead } = useReadState();
+    const { toggleSaved, isSaved } = useSavedArticles();
 
     const posts = data.allBlogPost.nodes;
 
     const filtered = useMemo(() => {
         if (activeTopic === 'すべて') return posts;
         return posts.filter((p) =>
-            `${p.title} ${p.sourceTitle}`.toLowerCase().includes(activeTopic.toLowerCase())
+            `${p.title} ${p.sourceTitle}`.toLowerCase().includes(activeTopic.toLowerCase()),
         );
     }, [posts, activeTopic]);
 
@@ -46,7 +48,7 @@ const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
         title: p.title,
         link: p.link,
         matchedKeywords: TOPICS.filter((kw) =>
-            p.title.toLowerCase().includes(kw.toLowerCase())
+            p.title.toLowerCase().includes(kw.toLowerCase()),
         ),
     }));
 
@@ -82,7 +84,7 @@ const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
                                 source: hero.sourceTitle,
                                 publishedAt: hero.pubDate,
                                 matchedKeywords: TOPICS.filter((kw) =>
-                                    hero.title.toLowerCase().includes(kw.toLowerCase())
+                                    hero.title.toLowerCase().includes(kw.toLowerCase()),
                                 ),
                                 savedAt: '',
                             })
@@ -94,7 +96,7 @@ const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
             <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={4}>
                 {rest.slice(4).map((post) => {
                     const matchedKeywords = TOPICS.filter((kw) =>
-                        post.title.toLowerCase().includes(kw.toLowerCase())
+                        post.title.toLowerCase().includes(kw.toLowerCase()),
                     );
                     return (
                         <ArticleCard

@@ -3,13 +3,17 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import Layout from '../components/layout';
 import { ArticleCard } from '../components/ArticleCard/ArticleCard';
 import { EmptyState } from '../components/EmptyState/EmptyState';
-import { useReadState, type SavedArticle } from '../hooks/useReadState';
+import { useSavedArticles, type SavedArticle } from '../hooks/useSavedArticles';
+import { useReadState } from '../hooks/useReadState';
 
 const SavedPage: React.FC = () => {
-    const { savedArticles, toggleSaved, isRead, markRead } = useReadState();
+    const { savedArticles, toggleSaved } = useSavedArticles();
+    const { isRead, markRead } = useReadState();
     // SSRと一致させるため、ハイドレーション後に描画する
     const [mounted, setMounted] = useState(false);
-    useEffect(() => { setMounted(true); }, []);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     if (!mounted) return <Layout><Box /></Layout>;
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'gatsby';
 import { Box, Button, Flex, HStack, Text } from '@chakra-ui/react';
+import { AuthButton } from '../AuthButton/AuthButton';
 
 type NavTab = { label: string; to: string };
 
@@ -81,21 +82,7 @@ export const NavBar: React.FC<Props> = ({ activePath = '/' }) => {
                     </HStack>
                 </Box>
 
-                {/* アバター */}
-                <Flex
-                    w={8}
-                    h={8}
-                    borderRadius='full'
-                    bg='brand.700'
-                    color='white'
-                    align='center'
-                    justify='center'
-                    fontSize='xs'
-                    fontWeight='bold'
-                    flexShrink={0}
-                >
-                    YY
-                </Flex>
+                <AuthButton />
             </Flex>
         </Box>
     );
