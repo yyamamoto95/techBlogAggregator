@@ -1,0 +1,127 @@
+{
+  "$schema": "https://unpkg.com/@yyamamoto95/flow-wireframe/schema/flow-wireframe.schema.json",
+  "title": "Tech Blog Aggregator 業務フロー ワイヤーフレーム",
+  "description": "技術ブログ収集サイトの利用フローと、毎朝の自動ダイジェスト生成パイプラインを見える化したもの。ID の TB-1xx は閲覧系、TB-2xx は自動化系。",
+  "version": "0.1.0",
+  "accent": "#0d9488",
+  "screens": [
+    {
+      "id": "home",
+      "name": "ホーム（最新記事）",
+      "layout": "desktop",
+      "note": "23の購読フィードから収集した最新記事を一覧する。未読数の挨拶とトピック絞り込みで「今日読むもの」を選べる。",
+      "elements": [
+        { "type": "nav", "items": ["最新", { "label": "Daily Digest", "goto": "digest" }, { "label": "購読ソース", "goto": "blogs" }, { "label": "保存済み", "goto": "saved" }], "selected": "最新" },
+        { "type": "header", "label": "おはようございます。未読が 12 件あります", "note": "時間帯であいさつを変え、未読数で「読む量」の目安を示す" },
+        { "type": "choice", "label": "トピックで絞り込み", "items": ["すべて", "AI", "TypeScript", "設計", "SRE"], "selected": "すべて", "note": "digest 設定の関心キーワードがそのままチップになる" },
+        { "type": "card", "label": "ヒーロー記事（最新・注目）", "value": "LLM時代のコードレビュー戦略", "caption": "Tech Blog A ・ 3時間前", "note": "最上位1件を大きく見せ、続く4件をランキング表示する" },
+        { "type": "list", "label": "続きの記事", "items": ["2. TypeScript 5.9 の新機能まとめ", "3. 障害対応の心理的安全性", "4. RSC の設計パターン", "5. SLO 運用の実際"] },
+        { "type": "button", "label": "記事を読む（外部サイト）", "external": true, "note": "記事は元ブログで読む。開いた記事は既読になりグレー表示" },
+        { "type": "link", "label": "☆ 保存（あとで読む）", "goto": "saved", "note": "保存はブラウザに記録され、保存済みタブから読み返せる" },
+        { "type": "text", "label": "該当記事が0件のトピックでは「別のトピックを選択してください」と案内する", "muted": true }
+      ]
+    },
+    {
+      "id": "digest",
+      "name": "Daily Digest",
+      "layout": "desktop",
+      "note": "毎朝6時に自動生成される「今日の注目10本」。全記事を追わなくても要点を掴める。",
+      "elements": [
+        { "type": "nav", "items": [{ "label": "最新", "goto": "home" }, "Daily Digest", { "label": "購読ソース", "goto": "blogs" }, { "label": "保存済み", "goto": "saved" }], "selected": "Daily Digest" },
+        { "type": "header", "label": "Daily Digest — 2026-07-10" },
+        { "type": "badge", "label": "毎朝6時(JST)に自動生成", "tone": "neutral" },
+        { "type": "card", "label": "1. はてブ 328", "value": "LLM時代のコードレビュー戦略", "caption": "AI ・ 一行要約: レビュー観点を人とAIで分担する実践論", "note": "はてブ数+キーワード一致のスコアで選抜。ANTHROPIC_API_KEY があれば Claude が一行要約" },
+        { "type": "list", "label": "2〜10位", "items": ["2. TypeScript 5.9 の新機能まとめ（はてブ 210）", "3. 障害対応の心理的安全性（はてブ 180）", "…", "10. 【セレンディピティ枠】週末の電子工作入門", "　 スコア外からランダムに混ぜる発見枠"] },
+        { "type": "text", "label": "ダイジェストがまだない日は「毎朝6時に自動生成されます」と案内する", "muted": true }
+      ]
+    },
+    {
+      "id": "blogs",
+      "name": "購読ソース一覧",
+      "layout": "desktop",
+      "note": "収集対象の23フィードをカード形式で一覧する。どこから記事が来ているかの透明性を担保。",
+      "elements": [
+        { "type": "nav", "items": [{ "label": "最新", "goto": "home" }, { "label": "Daily Digest", "goto": "digest" }, "購読ソース", { "label": "保存済み", "goto": "saved" }], "selected": "購読ソース" },
+        { "type": "header", "label": "購読ソース一覧（23件）" },
+        { "type": "list", "items": ["Tech Blog A", "Tech Blog B", "Engineering Blog C", "…（3列グリッドで表示）"] },
+        { "type": "link", "label": "ソースのサイトを開く", "external": true }
+      ]
+    },
+    {
+      "id": "saved",
+      "name": "保存済み",
+      "layout": "desktop",
+      "note": "「あとで読む」記事の一覧。既読管理と同じくブラウザ（localStorage）に保存され、登録不要で使える。",
+      "elements": [
+        { "type": "nav", "items": [{ "label": "最新", "goto": "home" }, { "label": "Daily Digest", "goto": "digest" }, { "label": "購読ソース", "goto": "blogs" }, "保存済み"], "selected": "保存済み" },
+        { "type": "header", "label": "保存済み（4件）" },
+        { "type": "list", "items": ["LLM時代のコードレビュー戦略 ☆", "RSC の設計パターン ☆", "SLO 運用の実際 ☆（既読）", "週末の電子工作入門 ☆"] },
+        { "type": "button", "label": "記事を読む（外部サイト）", "external": true },
+        { "type": "text", "label": "0件のときは「保存した記事がここに並びます」と案内する", "muted": true }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "TB-101",
+      "name": "朝の巡回で今日読む記事を選ぶ",
+      "actor": "読者",
+      "description": "全記事を追わず、トピック絞り込みと未読数を頼りに読むものを決める、このサイトの中核フロー。",
+      "scenario": {
+        "given": ["購読フィードから記事が収集されている"],
+        "when": ["ホームを開き、関心のあるトピックで絞り込む"],
+        "then": ["未読数と注目記事がひと目でわかる", "記事は元のブログで読める", "読んだ記事は既読としてグレー表示になる"]
+      },
+      "steps": [
+        { "screen": "home", "action": "トピックを選んで記事をクリック", "result": "既読として記録される" },
+        { "process": "元ブログを新しいタブで表示", "actor": "ブラウザ", "result": "読了" }
+      ]
+    },
+    {
+      "id": "TB-102",
+      "name": "あとで読む記事を保存して読み返す",
+      "actor": "読者",
+      "scenario": {
+        "given": ["気になる記事があるが今は読む時間がない"],
+        "when": ["記事の☆（保存）を押す", "後日「保存済み」タブを開く"],
+        "then": ["保存した記事が一覧で表示される", "☆をもう一度押すと保存から外れる"]
+      },
+      "steps": [
+        { "screen": "home", "action": "記事の「☆ 保存」を押す", "result": "ブラウザに保存（登録不要）" },
+        { "screen": "saved", "result": "いつでも読み返せる" }
+      ]
+    },
+    {
+      "id": "TB-103",
+      "name": "Daily Digest で要点だけ掴む",
+      "actor": "読者",
+      "scenario": {
+        "given": ["今朝のダイジェストが生成されている"],
+        "when": ["Daily Digest タブを開く"],
+        "then": ["注目記事が最大10本、はてブ数と一行要約つきで表示される", "セレンディピティ枠で関心外の発見もある"]
+      },
+      "steps": [
+        { "screen": "home", "action": "ナビの「Daily Digest」をクリック" },
+        { "screen": "digest", "result": "10本だけ読めば追いつける" }
+      ]
+    },
+    {
+      "id": "TB-201",
+      "name": "毎朝のダイジェスト自動生成（バッチ）",
+      "actor": "システム",
+      "description": "毎朝6時(JST)に GitHub Actions が実行する。LLM や Slack が落ちていても止まらない段階的フォールバック設計。",
+      "scenario": {
+        "given": ["毎朝6時(JST)になる、または手動実行される"],
+        "when": ["23フィードのRSSを収集し、はてブ数とキーワード一致でスコアリングして最大10本を選抜する", "ANTHROPIC_API_KEY があれば Claude が一行要約を生成する（なければRSSの抜粋を使用）"],
+        "then": ["digests/YYYY-MM-DD.md がコミットされる", "SLACK_WEBHOOK_URL があれば Slack にも配信される", "サイトが再ビルドされ Daily Digest 画面に反映される"]
+      },
+      "steps": [
+        { "process": "RSS収集（23フィード）", "action": "記事一覧を取得" },
+        { "process": "はてブ数付与 + スコアリング", "action": "ルールベースで最大10本を選抜", "result": "セレンディピティ枠を含む" },
+        { "process": "一行要約", "action": "digests/*.md をコミット", "result": "LLMなしでもRSS抜粋で継続（フォールバック）" },
+        { "process": "配信（Slack・サイト再ビルド）", "action": "翌朝、読者が確認", "result": "オプション未設定でも止まらない" },
+        { "screen": "digest", "result": "読者に届く" }
+      ]
+    }
+  ]
+}
