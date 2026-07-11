@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useToast } from '@chakra-ui/react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useLocalStorage } from './useLocalStorage';
@@ -56,9 +57,18 @@ function toDb(article: SavedArticle, userId: string) {
 
 export function useSavedArticles() {
     const { user } = useAuth();
+    const toast = useToast();
     const [localSaved, setLocalSaved] = useLocalStorage<SavedArticle[]>('mizuo:saved', []);
     const [remoteSaved, setRemoteSaved] = useState<SavedArticle[]>([]);
     const migrated = useRef(false);
+
+    const notifyError = useCallback(
+        (title: string, error: unknown) => {
+            console.error(title, error);
+            toast({ title, status: 'error', duration: 5000, isClosable: true });
+        },
+        [toast],
+    );
 
     useEffect(() => {
         if (!user) {
@@ -69,10 +79,14 @@ export function useSavedArticles() {
             .from('saved_articles')
             .select('*')
             .order('saved_at', { ascending: false })
-            .then(({ data }) => {
+            .then(({ data, error }) => {
+                if (error) {
+                    notifyError('保存記事の取得に失敗しました', error);
+                    return;
+                }
                 if (data) setRemoteSaved((data as DbRow[]).map(fromDb));
             });
-    }, [user]);
+    }, [user, notifyError]);
 
     // ログイン後にlocalStorageのデータをSupabaseへ1回だけ移行
     useEffect(() => {
@@ -83,18 +97,24 @@ export function useSavedArticles() {
             .from('saved_articles')
             .upsert(rows, { onConflict: 'user_id,link' })
             .then(({ error }) => {
-                if (!error) {
-                    setLocalSaved([]);
-                    supabase
-                        .from('saved_articles')
-                        .select('*')
-                        .order('saved_at', { ascending: false })
-                        .then(({ data }) => {
-                            if (data) setRemoteSaved((data as DbRow[]).map(fromDb));
-                        });
+                if (error) {
+                    notifyError('保存記事の移行に失敗しました', error);
+                    return;
                 }
+                setLocalSaved([]);
+                supabase
+                    .from('saved_articles')
+                    .select('*')
+                    .order('saved_at', { ascending: false })
+                    .then(({ data, error: fetchError }) => {
+                        if (fetchError) {
+                            notifyError('保存記事の取得に失敗しました', fetchError);
+                            return;
+                        }
+                        if (data) setRemoteSaved((data as DbRow[]).map(fromDb));
+                    });
             });
-    }, [user, localSaved, setLocalSaved]);
+    }, [user, localSaved, setLocalSaved, notifyError]);
 
     const savedArticles = user ? remoteSaved : localSaved;
 
@@ -111,18 +131,30 @@ export function useSavedArticles() {
 
             const exists = remoteSaved.some((a) => a.link === article.link);
             if (exists) {
+                const prevSaved = remoteSaved;
                 setRemoteSaved((prev) => prev.filter((a) => a.link !== article.link));
-                await supabase
+                const { error } = await supabase
                     .from('saved_articles')
                     .delete()
                     .match({ user_id: user.id, link: article.link });
+                if (error) {
+                    // 失敗時は楽観的更新をロールバックする
+                    setRemoteSaved(prevSaved);
+                    notifyError('保存の解除に失敗しました', error);
+                }
             } else {
                 const newArticle = { ...article, savedAt: new Date().toISOString() };
                 setRemoteSaved((prev) => [newArticle, ...prev]);
-                await supabase.from('saved_articles').insert(toDb(newArticle, user.id));
+                const { error } = await supabase
+                    .from('saved_articles')
+                    .insert(toDb(newArticle, user.id));
+                if (error) {
+                    setRemoteSaved((prev) => prev.filter((a) => a.link !== newArticle.link));
+                    notifyError('記事の保存に失敗しました', error);
+                }
             }
         },
-        [user, remoteSaved, setLocalSaved],
+        [user, remoteSaved, setLocalSaved, notifyError],
     );
 
     const isSaved = useCallback(
