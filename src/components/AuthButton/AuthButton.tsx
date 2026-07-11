@@ -20,7 +20,7 @@ export const AuthButton: React.FC = () => {
             <Button
                 size='sm'
                 variant='outline'
-                colorScheme='green'
+                colorScheme='brand'
                 onClick={signInWithGitHub}
                 flexShrink={0}
                 fontSize={{ base: 'xs', md: 'sm' }}

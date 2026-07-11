@@ -20,23 +20,24 @@ export const NavBar: React.FC<Props> = ({ activePath = '/' }) => {
     return (
         <Box
             as='header'
-            bg='white'
+            bg='neutral.surface'
             borderBottomWidth='1px'
             borderColor='neutral.border'
-            px={{ base: 3, md: 6 }}
+            px={{ base: 3, md: 9 }}
             py={3}
             position='sticky'
             top={0}
             zIndex='sticky'
         >
-            <Flex align='center' maxW='container.lg' mx='auto' gap={{ base: 2, md: 4 }}>
-                {/* ロゴ: モバイルでは非表示 */}
+            <Flex align='center' maxW='70rem' mx='auto' gap={{ base: 2, md: '1.375rem' }}>
+                {/* ワードマーク: モバイルでは非表示 */}
                 <Text
                     as={Link}
                     to='/'
                     fontWeight='bold'
-                    fontSize='lg'
-                    color='neutral.textPrimary'
+                    fontSize='xl'
+                    letterSpacing='0.02em'
+                    color='accent.base'
                     flexShrink={0}
                     display={{ base: 'none', md: 'block' }}
                     _hover={{ textDecoration: 'none' }}
@@ -44,17 +45,14 @@ export const NavBar: React.FC<Props> = ({ activePath = '/' }) => {
                     Mizuo
                 </Text>
 
-                {/* タブナビ: モバイルでは横スクロール */}
+                {/* ピルナビ: モバイルでは横スクロール */}
                 <Box
                     overflowX='auto'
                     flex={1}
                     sx={{ '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none' }}
                 >
                     <HStack
-                        spacing={1}
-                        bg='neutral.chip'
-                        borderRadius='full'
-                        p={1}
+                        spacing='0.375rem'
                         width='fit-content'
                         minW='100%'
                         justifyContent={{ base: 'space-between', md: 'flex-start' }}
@@ -66,13 +64,12 @@ export const NavBar: React.FC<Props> = ({ activePath = '/' }) => {
                                     key={tab.to}
                                     as={Link}
                                     to={tab.to}
-                                    variant='tab'
+                                    variant='navTab'
                                     aria-current={isActive ? 'page' : undefined}
-                                    bg={isActive ? 'white' : 'transparent'}
-                                    color={isActive ? 'neutral.textPrimary' : 'neutral.textSecondary'}
-                                    shadow={isActive ? 'sm' : 'none'}
-                                    fontSize={{ base: 'xs', md: 'sm' }}
-                                    px={{ base: 3, md: 4 }}
+                                    bg={isActive ? 'accent.soft' : 'transparent'}
+                                    color={isActive ? 'accent.base' : 'neutral.textSecondary'}
+                                    fontSize={{ base: 'sm', md: 'md' }}
+                                    px={{ base: 3, md: '0.875rem' }}
                                     flexShrink={0}
                                 >
                                     {tab.label}

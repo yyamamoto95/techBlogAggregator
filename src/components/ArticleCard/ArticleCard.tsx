@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Box, Flex, IconButton, Link, Text } from '@chakra-ui/react';
+import { Badge, Flex, IconButton, Link, Text } from '@chakra-ui/react';
 
 type Props = {
     title: string;
@@ -27,6 +27,7 @@ function relativeTime(date: Date): string {
     return `${days}日前`;
 }
 
+// 標準の記事カード（白サーフェス）: ソース行 → タイトル → トピックタグ
 export const ArticleCard: React.FC<Props> = ({
     title,
     link,
@@ -42,63 +43,75 @@ export const ArticleCard: React.FC<Props> = ({
     onSave,
 }) => {
     return (
-        <Box
-            bg='white'
-            borderRadius='xl'
-            p={4}
+        <Flex
+            as='article'
+            direction='column'
+            gap='0.625rem'
+            bg='neutral.surface'
+            borderRadius='card'
+            p={5}
+            shadow='card'
             opacity={isRead ? 0.5 : 1}
-            transition='opacity 0.2s'
-            _hover={{ shadow: 'sm' }}
-            position='relative'
+            transition='opacity 0.2s ease, box-shadow 0.15s ease'
+            _hover={{ shadow: 'raised' }}
         >
-            <Flex justify='space-between' align='flex-start' gap={2}>
-                <Box flex={1}>
-                    <Text fontSize='xs' color='neutral.textMuted' mb={1} noOfLines={1}>
-                        {source}
-                        {publishedAt && ` · ${relativeTime(publishedAt)}`}
-                        {hatebu > 0 && ` · 🔖${hatebu}`}
+            <Flex align='center' gap={2} fontSize='sm' color='neutral.textMuted'>
+                <Text as='span' noOfLines={1}>
+                    {source}
+                </Text>
+                {hatebu > 0 && (
+                    <Text as='span' flexShrink={0}>
+                        はてブ {hatebu}
                     </Text>
-                    <Link
-                        href={link}
-                        isExternal
-                        fontWeight='semibold'
-                        fontSize='sm'
-                        color='neutral.textPrimary'
-                        onClick={onRead}
-                        _hover={{ color: 'brand.600' }}
-                    >
-                        {title}
-                    </Link>
-                    {summary && (
-                        <Text mt={1} fontSize='xs' color='neutral.textSecondary' noOfLines={2}>
-                            {summary}
-                        </Text>
-                    )}
-                    {(matchedKeywords.length > 0 || serendipity) && (
-                        <Flex mt={2} gap={1} flexWrap='wrap'>
-                            {matchedKeywords.map((kw) => (
-                                <Badge key={kw} colorScheme='blue' variant='subtle'>
-                                    {kw}
-                                </Badge>
-                            ))}
-                            {serendipity && (
-                                <Badge colorScheme='purple' variant='subtle'>
-                                    🎲
-                                </Badge>
-                            )}
-                        </Flex>
-                    )}
-                </Box>
+                )}
+                {publishedAt && (
+                    <Text as='span' flexShrink={0}>
+                        {relativeTime(publishedAt)}
+                    </Text>
+                )}
                 <IconButton
                     aria-label={isSaved ? '保存済み' : '保存'}
                     icon={<span>{isSaved ? '★' : '☆'}</span>}
                     size='xs'
                     variant='ghost'
-                    color={isSaved ? 'yellow.400' : 'neutral.textMuted'}
+                    fontSize='15px'
+                    minW='auto'
+                    h='auto'
+                    ml='auto'
+                    color={isSaved ? 'highlight.base' : 'neutral.textMuted'}
+                    _hover={{ bg: 'transparent', color: 'highlight.base' }}
                     onClick={onSave}
                     flexShrink={0}
                 />
             </Flex>
-        </Box>
+            <Link
+                href={link}
+                isExternal
+                fontWeight='bold'
+                fontSize='md'
+                lineHeight={1.6}
+                flex={1}
+                color='neutral.textPrimary'
+                onClick={onRead}
+                _hover={{ color: 'accent.base', textDecoration: 'none' }}
+            >
+                {title}
+            </Link>
+            {summary && (
+                <Text fontSize='sm' color='neutral.textSecondary' lineHeight={1.8} noOfLines={2}>
+                    {summary}
+                </Text>
+            )}
+            {(matchedKeywords.length > 0 || serendipity) && (
+                <Flex gap='0.375rem' flexWrap='wrap'>
+                    {matchedKeywords.map((kw) => (
+                        <Badge key={kw} variant='accent'>
+                            {kw}
+                        </Badge>
+                    ))}
+                    {serendipity && <Badge variant='amber'>寄り道</Badge>}
+                </Flex>
+            )}
+        </Flex>
     );
 };
