@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@yyamamoto95/flow-wireframe/schema/flow-wireframe.schema.json",
+  "$schema": "https://unpkg.com/flow-wireframe/schema/flow-wireframe.schema.json",
   "title": "Tech Blog Aggregator 業務フロー ワイヤーフレーム",
   "description": "技術ブログ収集サイトの利用フローと、毎朝の自動ダイジェスト生成パイプラインを見える化したもの。ID の TB-1xx は閲覧系、TB-2xx は自動化系。",
   "version": "0.1.0",

@@ -1,7 +1,7 @@
 # 業務フロー ワイヤーフレーム
 
 このサイトの利用フロー（閲覧・保存・ダイジェスト）と、毎朝の自動ダイジェスト生成パイプラインを
-[@yyamamoto95/flow-wireframe](https://github.com/yyamamoto95/budget-management-tool/tree/main/packages/flow-wireframe) で見える化したもの。
+[flow-wireframe](https://github.com/yyamamoto95/flow-wireframe) で見える化したもの。
 
 | ファイル | 役割 |
 |---------|------|
@@ -11,7 +11,7 @@
 ## 再生成の方法
 
 ```bash
-npx @yyamamoto95/flow-wireframe build wireframes/techblog.flow.json -o wireframes/techblog.wireframe.html
+npx flow-wireframe build wireframes/techblog.flow.json -o wireframes/techblog.wireframe.html
 ```
 
 定義（JSON）を変更したら HTML を再生成してコミットする。出力は決定的（同じ定義→同じHTML）なので、
