@@ -21,3 +21,7 @@ jobs:
 
       - name: Gatsby build (Netlifyと同等のビルド)
         run: npm run build
+        env:
+          # クライアントバンドルに埋め込まれる公開値（リポジトリ変数で管理）
+          GATSBY_SUPABASE_URL: ${{ vars.GATSBY_SUPABASE_URL }}
+          GATSBY_SUPABASE_ANON_KEY: ${{ vars.GATSBY_SUPABASE_ANON_KEY }}
