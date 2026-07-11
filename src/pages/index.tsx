@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { graphql, PageProps } from 'gatsby';
-import { Box, SimpleGrid } from '@chakra-ui/react';
+import { Box, Grid, SimpleGrid } from '@chakra-ui/react';
 import Layout from '../components/layout';
 import { GreetingHeader } from '../components/GreetingHeader/GreetingHeader';
 import { TopicChipBar } from '../components/TopicChipBar/TopicChipBar';
 import { HeroCard } from '../components/HeroCard/HeroCard';
+import { ReadingList } from '../components/ReadingList/ReadingList';
 import { ArticleCard } from '../components/ArticleCard/ArticleCard';
 import { EmptyState } from '../components/EmptyState/EmptyState';
 import { useReadState } from '../hooks/useReadState';
@@ -43,20 +44,33 @@ const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
     const unreadCount = filtered.filter((p) => !isRead(p.link)).length;
     const [hero, ...rest] = filtered;
 
-    const sideItems = rest.slice(0, 4).map((p, i) => ({
-        rank: i + 1,
+    const toSavedArticle = (post: BlogPost) => ({
+        title: post.title,
+        link: post.link,
+        source: post.sourceTitle,
+        publishedAt: post.pubDate,
+        matchedKeywords: TOPICS.filter((kw) =>
+            post.title.toLowerCase().includes(kw.toLowerCase()),
+        ),
+        savedAt: '',
+    });
+
+    // 「続けて読む」レール（イチオシが01なので02から連番）
+    const railItems = rest.slice(0, 4).map((p, i) => ({
+        index: i + 2,
         title: p.title,
         link: p.link,
-        matchedKeywords: TOPICS.filter((kw) =>
-            p.title.toLowerCase().includes(kw.toLowerCase()),
-        ),
+        isRead: isRead(p.link),
+        isSaved: isSaved(p.link),
+        onRead: () => markRead(p.link),
+        onSave: () => toggleSaved(toSavedArticle(p)),
     }));
 
     return (
         <Layout>
-            <GreetingHeader unreadCount={unreadCount} />
+            <GreetingHeader unreadCount={unreadCount} totalCount={filtered.length} />
 
-            <Box mb={5}>
+            <Box mt='18px' mb={6}>
                 <TopicChipBar topics={TOPICS} active={activeTopic} onChange={setActiveTopic} />
             </Box>
 
@@ -68,29 +82,22 @@ const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
             )}
 
             {hero && (
-                <Box mb={6}>
+                <Grid
+                    templateColumns={{ base: '1fr', md: '1.35fr 1fr' }}
+                    gap={4}
+                    mb={4}
+                >
                     <HeroCard
                         title={hero.title}
                         link={hero.link}
                         source={hero.sourceTitle}
                         publishedAt={hero.pubDate ? new Date(hero.pubDate) : null}
-                        sideItems={sideItems}
                         isSaved={isSaved(hero.link)}
                         onRead={() => markRead(hero.link)}
-                        onSave={() =>
-                            toggleSaved({
-                                title: hero.title,
-                                link: hero.link,
-                                source: hero.sourceTitle,
-                                publishedAt: hero.pubDate,
-                                matchedKeywords: TOPICS.filter((kw) =>
-                                    hero.title.toLowerCase().includes(kw.toLowerCase()),
-                                ),
-                                savedAt: '',
-                            })
-                        }
+                        onSave={() => toggleSaved(toSavedArticle(hero))}
                     />
-                </Box>
+                    {railItems.length > 0 && <ReadingList items={railItems} />}
+                </Grid>
             )}
 
             <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={4}>
@@ -109,16 +116,7 @@ const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
                             isRead={isRead(post.link)}
                             isSaved={isSaved(post.link)}
                             onRead={() => markRead(post.link)}
-                            onSave={() =>
-                                toggleSaved({
-                                    title: post.title,
-                                    link: post.link,
-                                    source: post.sourceTitle,
-                                    publishedAt: post.pubDate,
-                                    matchedKeywords,
-                                    savedAt: '',
-                                })
-                            }
+                            onSave={() => toggleSaved(toSavedArticle(post))}
                         />
                     );
                 })}

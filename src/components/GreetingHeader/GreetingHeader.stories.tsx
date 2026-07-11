@@ -7,5 +7,5 @@ const meta: Meta<typeof GreetingHeader> = {
 };
 export default meta;
 
-export const Default: StoryObj = { args: { unreadCount: 7 } };
-export const NoUnread: StoryObj = { args: { unreadCount: 0 } };
+export const Default: StoryObj = { args: { unreadCount: 7, totalCount: 12 } };
+export const NoUnread: StoryObj = { args: { unreadCount: 0, totalCount: 12 } };

@@ -52,7 +52,7 @@ const DigestPage: React.FC = () => {
                         </Text>
                     )}
 
-                    <Box display='flex' flexDirection='column' gap={3}>
+                    <Box display='flex' flexDirection='column' gap={4}>
                         {day.items.map((item) => (
                             <ArticleCard
                                 key={item.link}

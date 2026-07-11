@@ -23,19 +23,20 @@ const BlogsPage: React.FC<PageProps<DataProps>> = ({ data }) => {
                 {data.allBlogSource.nodes.map((source) => (
                     <Flex
                         key={source.name}
-                        bg='white'
-                        borderRadius='xl'
+                        bg='neutral.surface'
+                        borderRadius='card'
                         p={4}
                         align='center'
                         gap={3}
-                        _hover={{ shadow: 'sm' }}
-                        transition='box-shadow 0.15s'
+                        shadow='card'
+                        _hover={{ shadow: 'raised' }}
+                        transition='box-shadow 0.15s ease'
                     >
                         <Box
                             w={8}
                             h={8}
                             borderRadius='lg'
-                            bg='neutral.chip'
+                            bg='neutral.hover'
                             display='flex'
                             alignItems='center'
                             justifyContent='center'
@@ -50,7 +51,7 @@ const BlogsPage: React.FC<PageProps<DataProps>> = ({ data }) => {
                             fontSize='sm'
                             fontWeight='medium'
                             color='neutral.textPrimary'
-                            _hover={{ color: 'brand.600', textDecoration: 'none' }}
+                            _hover={{ color: 'accent.base', textDecoration: 'none' }}
                             noOfLines={2}
                         >
                             {source.title}

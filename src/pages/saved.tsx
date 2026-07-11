@@ -37,7 +37,7 @@ const SavedPage: React.FC = () => {
                 />
             )}
 
-            <Box display='flex' flexDirection='column' gap={3}>
+            <Box display='flex' flexDirection='column' gap={4}>
                 {savedArticles.map((article: SavedArticle) => (
                     <ArticleCard
                         key={article.link}
